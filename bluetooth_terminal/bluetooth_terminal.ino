@@ -41,5 +41,5 @@ void loop()
   //Serial.println(flex);
   //angle = 456.4;
   BTserial.println(String(flex) + "#");           // Write the character to Bluetooth  
-  delay(1000); 
+  delay(10); 
 }

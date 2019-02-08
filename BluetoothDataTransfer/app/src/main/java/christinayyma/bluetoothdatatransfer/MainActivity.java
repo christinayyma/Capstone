@@ -119,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
                 case 1:
                     String writeMessage = new String(writeBuf);
                     writeMessage = writeMessage.substring(begin, end);
-                    Log.d("Data", writeMessage);
                     break;
             }
         }
@@ -132,7 +131,6 @@ public class MainActivity extends AppCompatActivity {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
-        private TextView Flex1Readings;
 
         public ConnectedThread(BluetoothSocket socket) {
             Log.d("myTag", "ConnectedThread constructor");
@@ -158,11 +156,21 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     //Log.d("myTag", "Before Read");
                     bytes += mmInStream.read(buffer, bytes, buffer.length - bytes);
-                    StringBuilder sb = new StringBuilder();
+                    final StringBuilder sb = new StringBuilder();
                     for(int i = begin; i < bytes; i++) {
                         sb.append(String.valueOf((char)buffer[i]));
                         if(buffer[i] == "#".getBytes()[0]) {
-                            //Flex1Readings.setText(sb.toString());
+
+                            /*runOnUiThread(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    TextView Flex1Readings = findViewById(R.id.flex1);
+                                    Flex1Readings.setText(sb.toString());
+
+                                }
+                            });*/
+
                             Log.d("myTag", sb.toString());
                             sb.delete(0, sb.toString().length());
                             myHandler.obtainMessage(1, begin, i, buffer).sendToTarget();
@@ -175,8 +183,11 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 } catch (IOException e) {
-                    //Log.d("myTag", "Error recieving data");
+                    Log.d("myTag", "Error recieving data");
                     //break;
+                }
+                catch (NullPointerException e){
+                    Log.d("myTag", "Null Pointer Exception");
                 }
             }
 
