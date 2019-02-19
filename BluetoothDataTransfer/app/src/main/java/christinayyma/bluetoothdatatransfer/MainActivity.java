@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("myTag", "onCreate method");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         else {
             Log.d("myTag", "No connected devices");
         }
+        Log.d("myTag:", "before Connect Thread Creation");
         mConnectThread = new ConnectThread(mDevice);
         mConnectThread.start();
     }
@@ -80,8 +82,11 @@ public class MainActivity extends AppCompatActivity {
         public void run(){
             Log.d("myTag", "Running Connect Thread!");
             mBluetoothAdapter.cancelDiscovery();
+            Log.d("myTag", "Discovery Cancelled");
             try{
+                Log.d("myTag", "Trying to Connect Socket");
                 mmSocket.connect();
+                Log.d("myTag", "Socket Connected");
             } catch (IOException connectException){
                 try{
                     mmSocket.close();
@@ -90,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 //return;
             }
+            Log.d("myTag", "Starting Connected Thread!");
             mConnectedThread = new ConnectedThread(mmSocket);
             mConnectedThread.start();
         }
@@ -148,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
             mmOutStream = tmpOut;
         }
         public void run() {
-            Log.d("myTag", "Connected Thread Run");
+            Log.d("myTag", "Connected Thread Run!");
             byte[] buffer = new byte[1024];
             int begin = 0;
             int bytes = 0;
@@ -156,21 +162,11 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     //Log.d("myTag", "Before Read");
                     bytes += mmInStream.read(buffer, bytes, buffer.length - bytes);
+                    //Log.d("myTag", "After Read");
                     final StringBuilder sb = new StringBuilder();
                     for(int i = begin; i < bytes; i++) {
                         sb.append(String.valueOf((char)buffer[i]));
                         if(buffer[i] == "#".getBytes()[0]) {
-
-                            /*runOnUiThread(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    TextView Flex1Readings = findViewById(R.id.flex1);
-                                    Flex1Readings.setText(sb.toString());
-
-                                }
-                            });*/
-
                             Log.d("myTag", sb.toString());
                             sb.delete(0, sb.toString().length());
                             myHandler.obtainMessage(1, begin, i, buffer).sendToTarget();
