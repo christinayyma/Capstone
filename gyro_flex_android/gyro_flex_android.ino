@@ -52,9 +52,10 @@ void loop() {
   int flex = analogRead(FLEX_PIN);
   Serial.print(" | flex = "); Serial.print(flex);
   Serial.println();  
-  BTserial.println(String(flex) + "%" + convert_int16_to_str(gyro_x) + "%" + convert_int16_to_str(gyro_y) + "%" + 
-  convert_int16_to_str(gyro_z) + "%" + convert_int16_to_str(accelerometer_x) + "%" + 
-  convert_int16_to_str(accelerometer_y) + "%" + convert_int16_to_str(accelerometer_z) + "#");
+  //BTserial.println(String(flex) + "%" + convert_int16_to_str(gyro_x) + "%" + convert_int16_to_str(gyro_y) + "%" + 
+  //convert_int16_to_str(gyro_z) + "%" + convert_int16_to_str(accelerometer_x) + "%" + 
+  //convert_int16_to_str(accelerometer_y) + "%" + convert_int16_to_str(accelerometer_z) + "#");
+ 
   // delay
   delay(10);
 }

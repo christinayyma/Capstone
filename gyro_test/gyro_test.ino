@@ -1,5 +1,7 @@
 // (c) Michael Schoeffler 2017, http://www.mschoeffler.de
 #include "Wire.h" // This library allows you to communicate with I2C devices.
+#include <SoftwareSerial.h>
+SoftwareSerial BTserial(2, 3);
 const int MPU_ADDR = 0x68; // I2C address of the MPU-6050. If AD0 pin is set to HIGH, the I2C address will be 0x69.
 int16_t accelerometer_x, accelerometer_y, accelerometer_z; // variables for accelerometer raw data
 int16_t gyro_x, gyro_y, gyro_z; // variables for gyro raw data
@@ -9,6 +11,11 @@ char* convert_int16_to_str(int16_t i) { // converts int16 to string. Moreover, r
   sprintf(tmp_str, "%6d", i);
   return tmp_str;
 }
+const int f1 = A0;
+const int f2 = A1;
+const int f3 = A2;
+const int f4 = A3;
+
 void setup() {
   Serial.begin(9600);
   Wire.begin();
@@ -16,6 +23,12 @@ void setup() {
   Wire.write(0x6B); // PWR_MGMT_1 register
   Wire.write(0); // set to zero (wakes up the MPU-6050)
   Wire.endTransmission(true);
+
+  pinMode(f1, INPUT);
+  pinMode(f2, INPUT);
+  pinMode(f3, INPUT);
+  pinMode(f4, INPUT);
+  BTserial.begin(9600);
 }
 void loop() {
   Wire.beginTransmission(MPU_ADDR);
@@ -31,17 +44,29 @@ void loop() {
   gyro_x = Wire.read()<<8 | Wire.read(); // reading registers: 0x43 (GYRO_XOUT_H) and 0x44 (GYRO_XOUT_L)
   gyro_y = Wire.read()<<8 | Wire.read(); // reading registers: 0x45 (GYRO_YOUT_H) and 0x46 (GYRO_YOUT_L)
   gyro_z = Wire.read()<<8 | Wire.read(); // reading registers: 0x47 (GYRO_ZOUT_H) and 0x48 (GYRO_ZOUT_L)
-  
+
+  int flex1 = analogRead(f1);
+  int flex2 = analogRead(f2);
+  int flex3 = analogRead(f3);
+  int flex4 = analogRead(f4);
+
   // print out data
-  Serial.print("aX = "); Serial.print(convert_int16_to_str(accelerometer_x));
-  Serial.print(" | aY = "); Serial.print(convert_int16_to_str(accelerometer_y));
-  Serial.print(" | aZ = "); Serial.print(convert_int16_to_str(accelerometer_z));
+  BTserial.print("L");
+  BTserial.print(convert_int16_to_str(accelerometer_x));
+  BTserial.print(";"); BTserial.print(convert_int16_to_str(accelerometer_y));
+  BTserial.print(";"); BTserial.print(convert_int16_to_str(accelerometer_z));
   // the following equation was taken from the documentation [MPU-6000/MPU-6050 Register Map and Description, p.30]
-  Serial.print(" | tmp = "); Serial.print(temperature/340.00+36.53);
-  Serial.print(" | gX = "); Serial.print(convert_int16_to_str(gyro_x));
-  Serial.print(" | gY = "); Serial.print(convert_int16_to_str(gyro_y));
-  Serial.print(" | gZ = "); Serial.print(convert_int16_to_str(gyro_z));
-  Serial.println();
+  //BTserial.print(" | tmp = "); BTserial.print(temperature/340.00+36.53);
+  BTserial.print(";"); BTserial.print(convert_int16_to_str(gyro_x));
+  BTserial.print(";"); BTserial.print(convert_int16_to_str(gyro_y));
+  BTserial.print(";"); BTserial.print(convert_int16_to_str(gyro_z));
+  BTserial.print(";"); BTserial.print(flex1);
+  BTserial.print(";"); BTserial.print(flex2);
+  BTserial.print(";"); BTserial.print(flex3);
+  BTserial.print(";"); BTserial.print(flex4);
+//  BTBTserial.println(String("L") + convert_int16_to_str(accelerometer_x) + String(";") + convert_int16_to_str(accelerometer_y) + String(";") + convert_int16_to_str(accelerometer_z) + String(";") + 
+//  String(flex1) + String(";") + String(flex2) + String(";") + String(flex3) + String(";") + String(flex4) + String("#"));
+  BTserial.println();
   
   // delay
   delay(1000);
