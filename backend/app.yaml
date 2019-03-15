@@ -1,7 +1,10 @@
 runtime: python37
+# entrypoint: python main.py
+entrypoint: gunicorn --worker-class eventlet -w 1 main:app
 
 handlers:
 - url: /static
   static_dir: static
 - url: /.*
+  # secure: always
   script: auto
