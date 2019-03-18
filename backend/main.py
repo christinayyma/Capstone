@@ -12,11 +12,11 @@ socketio = SocketIO(app, async_mode=async_mode)
 def index():
     return render_template('index.html')
 
-@socketio.on('my event')
+@socketio.on('my_event')
 def test_message(message):
     emit('my_response', {'data': message['data']})
 
-@socketio.on('my broadcast event')
+@socketio.on('my_broadcast_event')
 def test_message(message):
     emit('my_response', {'data': message['data']}, broadcast=True)
 
