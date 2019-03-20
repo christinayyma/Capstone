@@ -18,7 +18,7 @@
             // });
 
             socket.on('my_response', function(msg) {
-                $('#log').append('<br>' + $('<div/>').text('Received: ' + msg.data).html());
+                $('#log').append('<br>' + $('<div/>').text('Received: ' + msg).html());
             });
 
             var ping_pong_times = [];
@@ -42,12 +42,12 @@
             });
 
             $('form#emit').submit(function(event) {
-                socket.emit('my_event', {data: $('#emit_data').val()});
+                socket.emit('echo', $('#emit_data').val());
                 return false;
             });
             
             $('form#broadcast').submit(function(event) {
-                socket.emit('my_broadcast_event', {data: $('#broadcast_data').val()});
+                socket.emit('broadcasting', $('#broadcast_data').val());
                 return false;
             });
 

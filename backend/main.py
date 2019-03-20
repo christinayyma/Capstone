@@ -7,22 +7,25 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app, async_mode=async_mode)
 
-
+ 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@socketio.on('my_event')
+@socketio.on('echo')
 def test_message(message):
-    emit('my_response', {'data': message['data']})
+    print('echo: ', message)
+    emit('my_response', message)
 
-@socketio.on('my_broadcast_event')
+@socketio.on('broadcasting')
 def test_message(message):
-    emit('my_response', {'data': message['data']}, broadcast=True)
+    print('broadcasting: ', message)
+    emit('my_response', message, broadcast=True)
 
 @socketio.on('connect')
 def test_connect():
-    emit('my_response', {'data': 'Connected!'})
+    print('a client connected!')
+    emit('my_response', 'Connected!')
 
 @socketio.on('my_ping')
 def ping_pong():
