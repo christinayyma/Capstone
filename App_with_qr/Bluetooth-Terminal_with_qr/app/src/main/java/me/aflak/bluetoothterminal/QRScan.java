@@ -18,6 +18,22 @@ public class QRScan extends AppCompatActivity {
     private static final int REQUEST_CODE_QR_SCAN = 101;
     private final String LOGTAG = "ScanYourQR";
     int code = 1375890685;
+    String result;
+
+    public void invalidScan() {
+        AlertDialog alertDialog = new AlertDialog.Builder(QRScan.this).create();
+        alertDialog.setTitle("Invalid Scan");
+        alertDialog.setMessage(result);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,26 +74,26 @@ public class QRScan extends AppCompatActivity {
         }
         if(requestCode == REQUEST_CODE_QR_SCAN)
         {
+            int resultInt = 0;
+            boolean validInt = true;
             if(data==null)
                 return;
             //Getting the passed result
-            String result = data.getStringExtra("com.blikoon.qrcodescanner.got_qr_scan_relult");
+            result = data.getStringExtra("com.blikoon.qrcodescanner.got_qr_scan_relult");
             Log.d(LOGTAG,"Have scan result in your app activity :"+ result);
-            int resultInt = Integer.parseInt(result);
-            if (resultInt != code) {
-                AlertDialog alertDialog = new AlertDialog.Builder(QRScan.this).create();
-                alertDialog.setTitle("Invalid Scan");
-                alertDialog.setMessage(result);
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                alertDialog.show();
+            try {
+                resultInt = Integer.parseInt(result);
+            } catch (NumberFormatException | NullPointerException nfe) {
+                validInt = false;
+               invalidScan();
             }
-            else {
-                setContentView(R.layout.select);
+            if (validInt) {
+                if (resultInt != code) {
+                    invalidScan();
+                } else {
+                    Intent i = new Intent(QRScan.this, Select.class);
+                    startActivity(i);
+                }
             }
 
 

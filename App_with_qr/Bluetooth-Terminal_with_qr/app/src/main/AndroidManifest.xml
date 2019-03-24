@@ -30,7 +30,6 @@
             android:screenOrientation="portrait">
         </activity>
 
-
         <activity
             android:name=".QRScan"
             android:label="Bluetooth Terminal"
