@@ -14,6 +14,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,8 @@ public class Select extends Activity implements PullToRefresh.OnRefreshListener 
     private List<BluetoothDevice> paired;
     private PullToRefresh pull_to_refresh;
     private boolean registered=false;
+    private String btModule1 = "7C:D1:C3:91:FB:BD";
+    private String btModule2 = "64:A5:C3:58:6B:60";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +70,7 @@ public class Select extends Activity implements PullToRefresh.OnRefreshListener 
             }
         });
 
+
         not_found.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,7 +86,9 @@ public class Select extends Activity implements PullToRefresh.OnRefreshListener 
     public void onRefresh() {
         List<String> names = new ArrayList<String>();
         for (BluetoothDevice d : bt.getPairedDevices()){
-            names.add(d.getName());
+            if (d.getAddress().equals(btModule1) || d.getAddress().equals(btModule2)) {
+                names.add(d.getName());
+            }
         }
 
         String[] array = names.toArray(new String[names.size()]);
@@ -112,7 +119,9 @@ public class Select extends Activity implements PullToRefresh.OnRefreshListener 
 
         List<String> names = new ArrayList<>();
         for (BluetoothDevice d : paired){
-            names.add(d.getName());
+            if (d.getAddress().equals(btModule1) || d.getAddress().equals(btModule2)) {
+                names.add(d.getName());
+            }
         }
 
         String[] array = names.toArray(new String[names.size()]);

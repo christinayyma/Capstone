@@ -24,8 +24,8 @@ import android.widget.TextView;
 import me.aflak.bluetooth.Bluetooth;
 
 public class Chat extends AppCompatActivity implements Bluetooth.CommunicationCallback {
-    private String name;
-    private Bluetooth b;
+    private String name1, name2;
+    private Bluetooth b1, b2;
     private EditText message;
     private Button send;
     private TextView text;
@@ -45,23 +45,29 @@ public class Chat extends AppCompatActivity implements Bluetooth.CommunicationCa
         text.setMovementMethod(new ScrollingMovementMethod());
         send.setEnabled(false);
 
-        b = new Bluetooth(this);
-        b.enableBluetooth();
+        b1 = new Bluetooth(this);
+        b1.enableBluetooth();
 
-        b.setCommunicationCallback(this);
+        b2 = new Bluetooth(this);
+        b2.enableBluetooth();
 
-        int pos = getIntent().getExtras().getInt("pos");
-        name = b.getPairedDevices().get(pos).getName();
+        b1.setCommunicationCallback(this);
+        b2.setCommunicationCallback(this);
+
+        name1 = b1.getPairedDevices().get(0).getName();
+        name2 = b2.getPairedDevices().get(1).getName();
 
         Display("Connecting...");
-        b.connectToDevice(b.getPairedDevices().get(pos));
+        b1.connectToDevice(b1.getPairedDevices().get(0));
+        b2.connectToDevice(b2.getPairedDevices().get(1));
 
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String msg = message.getText().toString();
                 message.setText("");
-                b.send(msg);
+                b1.send(msg);
+                b2.send(msg);
                 Display("You: "+msg);
             }
         });
@@ -92,8 +98,10 @@ public class Chat extends AppCompatActivity implements Bluetooth.CommunicationCa
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.close:
-                b.removeCommunicationCallback();
-                b.disconnect();
+                b1.removeCommunicationCallback();
+                b1.disconnect();
+                b2.removeCommunicationCallback();
+                b2.disconnect();
                 Intent intent = new Intent(this, Select.class);
                 startActivity(intent);
                 finish();
@@ -140,13 +148,12 @@ public class Chat extends AppCompatActivity implements Bluetooth.CommunicationCa
     public void onDisconnect(BluetoothDevice device, String message) {
         Display("Disconnected!");
         Display("Connecting again...");
-        b.connectToDevice(device);
+        b1.connectToDevice(device);
+        b2.connectToDevice(device);
     }
 
     @Override
-    public void onMessage(String message) {
-        Display(name+": "+message);
-    }
+    public void onMessage(String message) {Display(message);}
 
     @Override
     public void onError(String message) {
@@ -164,7 +171,8 @@ public class Chat extends AppCompatActivity implements Bluetooth.CommunicationCa
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        b.connectToDevice(device);
+                        b1.connectToDevice(device);
+                        b2.connectToDevice(device);
                     }
                 }, 2000);
             }
