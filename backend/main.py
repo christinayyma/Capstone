@@ -1,6 +1,7 @@
 from flask import Flask, render_template, session, request
 from flask_socketio import SocketIO, send, emit, disconnect
 from predict import predict
+import time
 
 async_mode = "eventlet"
 
