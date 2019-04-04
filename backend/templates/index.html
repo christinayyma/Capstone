@@ -1,93 +1,47 @@
 <!DOCTYPE HTML>
 <html>
+
 <head>
     <title>Sign Language Glove</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" />
     <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
-    <script type="text/javascript" charset="utf-8">
-        $(document).ready(function(){
-
-            namespace = '';
-
-            var socket = io.connect(
-                location.protocol + '//' + document.domain + ':' + location.port + namespace
-            );
-
-            // socket.on('connect', function() {
-            //     socket.emit('my_event', {data: 'I\'m connected!'});
-            // });
-
-            socket.on('my_response', function(msg) {
-                $('#log').append('<br>' + $('<div/>').text('Received: ' + msg).html());
-            });
-
-            socket.on('prediction', function(msg) {
-                $('#log').append('<br>' + $('<div/>').text('Predicted: ' + msg).html());
-            });
-
-            var ping_pong_times = [];
-            var start_time;
-            window.setInterval(function() {
-                start_time = (new Date).getTime();
-                socket.emit('my_ping');
-            }, 1000);
-
-            // Handler for the "pong" message. When the pong is received, the
-            // time from the ping is stored, and the average of the last 30
-            // samples is average and displayed.
-            socket.on('my_pong', function() {
-                var latency = (new Date).getTime() - start_time;
-                ping_pong_times.push(latency);
-                ping_pong_times = ping_pong_times.slice(-30); // keep last 30 samples
-                var sum = 0;
-                for (var i = 0; i < ping_pong_times.length; i++)
-                    sum += ping_pong_times[i];
-                $('#ping-pong').text(Math.round(10 * sum / ping_pong_times.length) / 10);
-            });
-
-            $('form#emit').submit(function(event) {
-                socket.emit('echo', $('#emit_data').val());
-                return false;
-            });
-            
-            $('form#broadcast').submit(function(event) {
-                socket.emit('broadcasting', $('#broadcast_data').val());
-                return false;
-            });
-
-            $('form#msg').submit(function(event) {
-                socket.emit('msg', $('#msg_data').val());
-                return false;
-            });
-
-            $('form#disconnect').submit(function(event) {
-                socket.emit('disconnect_request');
-                return false;
-            });
-        });
-    </script>
+    <script type="text/javascript" src="{{ url_for('static', filename='index.js') }}"></script>
 </head>
+
 <body>
-    <h1>Sign Language Glove</h1>
-    <p>Async mode is: <b>{{ async_mode }}</b></p>
-    <p>Average ping/pong latency: <b><span id="ping-pong"></span>ms</b></p>
-    <h2>Send:</h2>
-    <form id="emit" method="POST" action='#'>
-        <input type="text" name="emit_data" id="emit_data" placeholder="Message">
-        <input type="submit" value="Echo">
-    </form>
-    <form id="broadcast" method="POST" action='#'>
-        <input type="text" name="broadcast_data" id="broadcast_data" placeholder="Message">
-        <input type="submit" value="Broadcast">
-    </form>
-    <form id="msg" method="POST" action='#'>
-        <input type="text" name="msg_data" value="0 0 0 0 0 0 600 600 600 600 600" id="msg_data" placeholder="Data">
-        <input type="submit" value="Predict">
-    </form>
-    <form id="disconnect" method="POST" action="#">
-        <input type="submit" value="Disconnect">
-    </form>
-    <h2>Receive:</h2>
-    <div id="log"></div>
+    <div class="ui container">
+        <h2 class="page-header ui block header">
+            <i class="settings icon"></i>
+            <div class="content">
+                Backend Test Portal
+                <div class="sub header">
+                    Average ping/pong latency: <b><span id="ping-pong"></span>ms</b>
+                </div>
+            </div>
+        </h2>
+        <!-- <p>Async mode is: <b>{{ async_mode }}</b></p> -->
+        <div class="ui input fluid action field">
+            <input type="text" id="emit_data" placeholder="Hello">
+            <div id="echo" class="ui button">Echo</div>
+        </div>
+        <div class="ui input fluid action field">
+            <input type="text" id="broadcast_data" placeholder="I'm broadcasting!">
+            <div id="broadcast" class="ui button">Broadcast</div>
+        </div>
+        <div class="ui input fluid action field">
+            <input type="text" id="msg_data" value="0 0 0 0 0 0 600 600 600 600 600" placeholder="Data">
+            <div id="msg" class="ui button">Predict</div>
+        </div>
+        <div id="disconnect" class="ui basic red button disconnect">Disconnect</div>
+        <!-- <h2>Receive:</h2>
+        <div id="log"></div> -->
+        <div class="ui raised very padded text segment">
+            <h2 class="ui header">Responses from Server</h2>
+            <div id="log"></div>
+        </div>
+    </div>
 </body>
+
 </html>
