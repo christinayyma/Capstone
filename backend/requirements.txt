@@ -3,3 +3,4 @@ Werkzeug
 Flask_SocketIO
 eventlet
 gunicorn
+sklearn

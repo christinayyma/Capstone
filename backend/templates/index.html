@@ -21,6 +21,10 @@
                 $('#log').append('<br>' + $('<div/>').text('Received: ' + msg).html());
             });
 
+            socket.on('prediction', function(msg) {
+                $('#log').append('<br>' + $('<div/>').text('Predicted: ' + msg).html());
+            });
+
             var ping_pong_times = [];
             var start_time;
             window.setInterval(function() {
@@ -51,6 +55,11 @@
                 return false;
             });
 
+            $('form#msg').submit(function(event) {
+                socket.emit('msg', $('#msg_data').val());
+                return false;
+            });
+
             $('form#disconnect').submit(function(event) {
                 socket.emit('disconnect_request');
                 return false;
@@ -70,6 +79,10 @@
     <form id="broadcast" method="POST" action='#'>
         <input type="text" name="broadcast_data" id="broadcast_data" placeholder="Message">
         <input type="submit" value="Broadcast">
+    </form>
+    <form id="msg" method="POST" action='#'>
+        <input type="text" name="msg_data" value="0 0 0 0 0 0 600 600 600 600 600" id="msg_data" placeholder="Data">
+        <input type="submit" value="Predict">
     </form>
     <form id="disconnect" method="POST" action="#">
         <input type="submit" value="Disconnect">
