@@ -1,28 +1,27 @@
 from sklearn.externals import joblib
 import numpy as np
 import sys
-filename = sys.argv[-1]
 
+loaded_model = joblib.load("models/a2i_model.pkl")
 
-
-loaded_model = joblib.load("model.pkl")
+filename = "predict_data/" + sys.argv[-1]
 x_data = []
+letterMap = {
+0: "a",
+1: "b",
+2: "c",
+3: "d",
+4: "e",
+5: "f",
+6: "g",
+7: "h",
+8: "i",
+9: "j",
+}
 with open(filename) as fp:
 	for cnt, line in enumerate(fp):
 		x_data.append(line.split()[1:-1])
-# X_test_final = []
-# X_test = np.zeros(11)
-# X_test[0] = 0
-# X_test[1] = 0
-# X_test[2] = 0
-# X_test[3] = 0
-# X_test[4] = 0
-# X_test[5] = 0
-# X_test[6] = 600
-# X_test[7] = 600
-# X_test[8] = 600
-# X_test[9] = 600
-# X_test[10] = 600a)
+
 Y_predicted = loaded_model.predict(x_data)
-for pred, sample in zip(Y_predicted, x_data):
-	print(str(pred) + " = " + str(sample))
+for each in Y_predicted:
+	print(letterMap[each] + " ", end = "")
