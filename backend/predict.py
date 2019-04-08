@@ -13,6 +13,12 @@ letterMap = {
 	7: "h",
 	8: "i",
 	9: "j",
+	10: "k",
+	11: "l",
+	12: "m",
+	13: "n",
+	14: "o",
+
 }
 
 
@@ -40,7 +46,11 @@ def predict(data):
 	X_test[9] = 745
 	X_test[10] = 867
 
+	data = data.strip();
 	data = data.split(' ')
+	data = list(map(int, data))
+
+	print('data: ', data)
 
 	# X_test_final.append(X_test)
 	Y_predicted = loaded_model.predict([data])

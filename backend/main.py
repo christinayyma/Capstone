@@ -1,7 +1,7 @@
 from flask import Flask, render_template, session, request
 from flask_socketio import SocketIO, send, emit, disconnect
 from predict import predict
-import time
+
 
 async_mode = "eventlet"
 
@@ -9,9 +9,16 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app, async_mode=async_mode)
 
+result = ""
+prevResult = ""
+
  
 @app.route('/')
 def index():
+    # global thread
+    # if thread is None:
+    #     thread = Thread(target=setInterval(foo,1))
+    #     thread.start()
     return render_template('index.html')
 
 @socketio.on('echo')
@@ -28,9 +35,14 @@ def broadcast(message):
 def msg(message):
     if (message == ''):
         message = '-5488 11796 5320 4151 3606 -8208 535 777 768 745 867'
-    print('msg: ', message)
+    print('msg:', message)
+
+    global result
+    global prevResult
     result = predict(message)
-    emit('prediction', result)
+    if (result != prevResult):
+        emit('prediction', result)
+    prevResult = result
 
 @socketio.on('connect')
 def test_connect():
@@ -52,6 +64,15 @@ def test_disconnect():
     print('Client disconnected')
 
 
+# def setInterval(func,time):
+#     e = threading.Event()
+#     while not e.wait(time):
+#         func()
+
+# def foo():
+#     print("hello")
+
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    socketio.run(app, host='0.0.0.0', debug=True)
+
