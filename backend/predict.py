@@ -46,7 +46,7 @@ def predict(data):
 	X_test[9] = 745
 	X_test[10] = 867
 
-	data = data.strip();
+	data = data.strip()
 	data = data.split(' ')
 	data = list(map(int, data))
 

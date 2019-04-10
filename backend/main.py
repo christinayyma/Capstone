@@ -1,6 +1,7 @@
 from flask import Flask, render_template, session, request
 from flask_socketio import SocketIO, send, emit, disconnect
 from predict import predict
+from threading import Thread
 
 
 async_mode = "eventlet"
@@ -11,6 +12,7 @@ socketio = SocketIO(app, async_mode=async_mode)
 
 result = ""
 prevResult = ""
+signalCount = 0
 
  
 @app.route('/')
@@ -40,8 +42,12 @@ def msg(message):
     global result
     global prevResult
     result = predict(message)
-    if (result != prevResult):
+    countSignal();
+    print('count:', signalCount)
+    if (signalCount == 7):
         emit('prediction', result)
+    else:
+        emit('prediction', "0")
     prevResult = result
 
 @socketio.on('connect')
@@ -71,6 +77,14 @@ def test_disconnect():
 
 # def foo():
 #     print("hello")
+
+# count the numnber of consistent signals
+# need at least 7 consistent signals to return a result
+def countSignal():
+    if (result == prevResult):
+        print('incremeneting')
+        global signalCount
+        signalCount = signalCount + 1
 
 
 if __name__ == '__main__':
