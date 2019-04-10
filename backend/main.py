@@ -81,10 +81,12 @@ def test_disconnect():
 # count the numnber of consistent signals
 # need at least 7 consistent signals to return a result
 def countSignal():
+    global signalCount
     if (result == prevResult):
         print('incremeneting')
-        global signalCount
         signalCount = signalCount + 1
+    else:
+        signalCount = 0
 
 
 if __name__ == '__main__':
