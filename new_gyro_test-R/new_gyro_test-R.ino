@@ -49,18 +49,19 @@ void loop(){
     int flex3 = analogRead(middle);
     int flex4 = analogRead(ring);
     int flex5 = analogRead(pinky);
-    
-    BTSerial.print(" "); BTSerial.print(AcX);
-    BTSerial.print(" "); BTSerial.print(AcY);
-    BTSerial.print(" "); BTSerial.print(AcZ);
-    BTSerial.print(" "); BTSerial.print(GyX);
-    BTSerial.print(" "); BTSerial.print(GyY);
-    BTSerial.print(" "); BTSerial.print(GyZ);
+    BTSerial.print("RSTART");
+    BTSerial.print(" "); BTSerial.print(0);
+    BTSerial.print(" "); BTSerial.print(0);
+    BTSerial.print(" "); BTSerial.print(0);
+    BTSerial.print(" "); BTSerial.print(0);
+    BTSerial.print(" "); BTSerial.print(0);
+    BTSerial.print(" "); BTSerial.print(0);
     BTSerial.print(" "); BTSerial.print(flex1);
     BTSerial.print(" "); BTSerial.print(flex2);
     BTSerial.print(" "); BTSerial.print(flex3);
     BTSerial.print(" "); BTSerial.print(flex4);
-    BTSerial.print(" "); BTSerial.println(flex5);
+    BTSerial.print(" "); BTSerial.print(flex5);
+    BTSerial.println(" END");
     delay(10);
   
 }
