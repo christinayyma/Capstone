@@ -91,7 +91,7 @@ public class QRScan extends AppCompatActivity {
                 if (resultInt != code) {
                     invalidScan();
                 } else {
-                    Intent i = new Intent(QRScan.this, Select.class);
+                    Intent i = new Intent(QRScan.this, Chat.class);
                     startActivity(i);
                 }
             }
