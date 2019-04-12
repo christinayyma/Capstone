@@ -37,15 +37,24 @@ def broadcast(message):
     
 
 @socketio.on('msg')
-def msg(message):
-    if (message == ''):
-        message = '-5488 11796 5320 4151 3606 -8208 535 777 768 745 867'
-    print('msg:', message)
+def msg(data):
+    if (data == ''):
+        data = '-5488 11796 5320 4151 3606 -8208 535 777 768 745 867'
+    print('msg:', data)
+
+    data = data.strip()
+    data = data.split(' ')
+    orientation = data[0]
+    if (len(data) == 13):
+        del data[12]
+        del data[0]
+    data = list(map(int, data))
+
 
     global result
     global prevResult
-    result = predict(message)
-    countSignal()
+    result = predict(data, orientation)
+    countRightSignal()
     print('count:', rightSignalCount)
     if (rightSignalCount == 7):
         emit('prediction', result)
@@ -86,13 +95,19 @@ def test_disconnect():
 
 # count the numnber of consistent signals
 # need at least 7 consistent signals to return a result
-def countSignal():
+def countRightSignal():
     global rightSignalCount
     if (result == prevResult):
-        print('incremeneting')
         rightSignalCount = rightSignalCount + 1
     else:
         rightSignalCount = 0
+
+def countLeftSignal():
+    global leftSignalCount
+    if (result == prevResult):
+        leftSignalCount = leftSignalCount + 1
+    else:
+        leftSignalCount = 0
 
 
 if __name__ == '__main__':

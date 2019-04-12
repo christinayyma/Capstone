@@ -56,19 +56,10 @@ wordMap = {
 }
 
 
-def predict(data):
+def predict(data, orientation):
 	filename = sys.argv[-1]
 
 	print('data: ', data)
-
-
-	data = data.strip()
-	data = data.split(' ')
-	orientation = data[0]
-	if (len(data) == 13):
-		del data[12]
-		del data[0]
-	data = list(map(int, data))
 
 	if (orientation == "RSTART"):
 		loaded_model = joblib.load("model-letters.pkl")
