@@ -10,18 +10,17 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app, async_mode=async_mode)
 
-result = ""
-prevResult = ""
+# all this won't work if multiple devices are connected
+rightResult = ""
+prevRightResult = ""
+leftResult = ""
+prevLeftResult = ""
 rightSignalCount = 0
 leftSignalCount = 0
 
  
 @app.route('/')
 def index():
-    # global thread
-    # if thread is None:
-    #     thread = Thread(target=setInterval(foo,1))
-    #     thread.start()
     return render_template('index.html')
 
 @socketio.on('echo')
@@ -50,18 +49,34 @@ def msg(data):
         del data[0]
     data = list(map(int, data))
 
+    global rightResult
+    global prevRightResult
+    global leftResult
+    global prevLeftResult
+    global rightSignalCount
+    global leftSignalCount
 
-    global result
-    global prevResult
-    result = predict(data, orientation)
-    countRightSignal()
-    print('count:', rightSignalCount)
+    if (orientation == "LSTART"):
+        leftResult = predict(data, orientation)
+        countLeftSignal()
+    else:
+        rightResult = predict(data, orientation)
+        countRightSignal()
+
+    print('right count:', rightSignalCount)
+    print('left count:', leftSignalCount)
+
     if (rightSignalCount == 7):
-        emit('prediction', result)
+        emit('prediction', rightResult)
+        rightSignalCount = rightSignalCount + 1
+    elif (leftSignalCount == 7):
+        emit('prediction', leftResult)
+        leftSignalCount = leftSignalCount + 1
     else:
         emit('prediction', "0")
-    prevResult = result
-
+        
+    prevRightResult = rightResult
+    prevLeftResult = leftResult
 
 
 
@@ -85,26 +100,19 @@ def test_disconnect():
     print('Client disconnected')
 
 
-# def setInterval(func,time):
-#     e = threading.Event()
-#     while not e.wait(time):
-#         func()
-
-# def foo():
-#     print("hello")
-
 # count the numnber of consistent signals
-# need at least 7 consistent signals to return a result
+# need at least 7 consistent signals to return a rightResult
 def countRightSignal():
     global rightSignalCount
-    if (result == prevResult):
+    print("compare:", rightResult, prevRightResult)
+    if (rightResult == prevRightResult):
         rightSignalCount = rightSignalCount + 1
     else:
         rightSignalCount = 0
 
 def countLeftSignal():
     global leftSignalCount
-    if (result == prevResult):
+    if (leftResult == prevLeftResult):
         leftSignalCount = leftSignalCount + 1
     else:
         leftSignalCount = 0
