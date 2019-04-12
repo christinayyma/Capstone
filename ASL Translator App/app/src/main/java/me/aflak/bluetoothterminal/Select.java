@@ -28,6 +28,7 @@ public class Select extends Activity implements PullToRefresh.OnRefreshListener 
     private Bluetooth bt;
     private ListView listView;
     private Button not_found;
+    private Button connect;
     private List<BluetoothDevice> paired;
     private PullToRefresh pull_to_refresh;
     private boolean registered=false;
@@ -47,6 +48,7 @@ public class Select extends Activity implements PullToRefresh.OnRefreshListener 
         pull_to_refresh = (PullToRefresh)findViewById(R.id.pull_to_refresh);
         listView =  (ListView)findViewById(R.id.list);
         not_found =  (Button) findViewById(R.id.not_in_list);
+        connect = (Button) findViewById(R.id.connect);
 
         pull_to_refresh.setListView(listView);
         pull_to_refresh.setOnRefreshListener(this);
@@ -66,13 +68,8 @@ public class Select extends Activity implements PullToRefresh.OnRefreshListener 
             }
         });
 
-        not_found.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(Select.this, Scan.class);
-                startActivity(i);
-            }
-        });
+
+
 
         addDevicesToList();
     }
