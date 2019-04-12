@@ -18,48 +18,81 @@ letterMap = {
 	12: "m",
 	13: "n",
 	14: "o",
+	15: "p",
+	16: "q",
+	17: "r",
+	18: "s",
+	19: "t",
+	20: "u",
+	21: "v",
+	22: "w",
+	23: "x",
+	24: "y",
+	25: "z",
+}
 
+
+wordMap = {
+	0: "hello",
+	1: "yes",
+	2: "no",
+	3: "my",
+	4: "name is",#take care
+	5: "you",
+	6: "thank you",
+	7: "how are",
+	8: "I'm fine",
+	9: "deaf",
+	10: "I'm",
+	11: "no problem",
+	12: "what's up?",
+	13: "i agree",
+	14: "take care",
+	15: "i love you",
+	16: "drink",
+	17: "eat",
+	18: "water", #no problem
+	19: "bathroom"
 }
 
 
 def predict(data):
 	filename = sys.argv[-1]
 
-	loaded_model = joblib.load("model.pkl")
-	# x_data = []
-	# with open(filename) as fp:
-	# 	for cnt, line in enumerate(fp):
-	# 		x_data.append(line.split()[1:-1])
-	# X_test_final = []
+	print('data: ', data)
 
-
-	X_test = np.zeros(11)
-	X_test[0] = 0
-	X_test[1] = 11796
-	X_test[2] = 5320
-	X_test[3] = 4151
-	X_test[4] = 3606
-	X_test[5] = -8208
-	X_test[6] = 535
-	X_test[7] = 777
-	X_test[8] = 768
-	X_test[9] = 745
-	X_test[10] = 867
 
 	data = data.strip()
 	data = data.split(' ')
+	orientation = data[0]
+	if (len(data) == 13):
+		del data[12]
+		del data[0]
 	data = list(map(int, data))
 
-	print('data: ', data)
+	if (orientation == "RSTART"):
+		loaded_model = joblib.load("model-letters.pkl")
+		print("right hand")
+	elif (orientation == "LSTART"):
+		loaded_model = joblib.load("model-words.pkl")
+		print("left hand")
+	else:
+		loaded_model = joblib.load("model.pkl")
 
 	# X_test_final.append(X_test)
 	Y_predicted = loaded_model.predict([data])
-	# for pred, sample in zip(Y_predicted, X_test_final):
-	# 	print(letterMap[pred])
-	# 	result = letterMap[pred]
-	print('Y_predicted: ', Y_predicted)
-	print(letterMap[Y_predicted[0]])
-	return letterMap[Y_predicted[0]]
-		
+	probability = loaded_model.predict_proba([data])
+	
+	probability[0] = sorted(probability[0], reverse = True)
 
-	# 5488 11796 5320 4151 3606 -8208 535 777 768 745 867 
+	# if the highest probability is less than 0.3, return 0
+	if (probability[0][0] < 0.3):
+		return "0"
+
+	print('probability: ', probability)
+	print(letterMap[Y_predicted[0]])
+	# print wordmap here if left hand
+	if (orientation == "LSTART"):
+		return wordMap[Y_predicted[0]]
+	else:
+		return letterMap[Y_predicted[0]]

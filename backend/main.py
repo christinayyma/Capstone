@@ -12,7 +12,8 @@ socketio = SocketIO(app, async_mode=async_mode)
 
 result = ""
 prevResult = ""
-signalCount = 0
+rightSignalCount = 0
+leftSignalCount = 0
 
  
 @app.route('/')
@@ -33,6 +34,8 @@ def broadcast(message):
     print('broadcasting: ', message)
     emit('my_response', message, broadcast=True)
 
+    
+
 @socketio.on('msg')
 def msg(message):
     if (message == ''):
@@ -42,13 +45,16 @@ def msg(message):
     global result
     global prevResult
     result = predict(message)
-    countSignal();
-    print('count:', signalCount)
-    if (signalCount == 7):
+    countSignal()
+    print('count:', rightSignalCount)
+    if (rightSignalCount == 7):
         emit('prediction', result)
     else:
         emit('prediction', "0")
     prevResult = result
+
+
+
 
 @socketio.on('connect')
 def test_connect():
@@ -81,12 +87,12 @@ def test_disconnect():
 # count the numnber of consistent signals
 # need at least 7 consistent signals to return a result
 def countSignal():
-    global signalCount
+    global rightSignalCount
     if (result == prevResult):
         print('incremeneting')
-        signalCount = signalCount + 1
+        rightSignalCount = rightSignalCount + 1
     else:
-        signalCount = 0
+        rightSignalCount = 0
 
 
 if __name__ == '__main__':
