@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Bluetooth-Terminal-3f4744b3a10025df1b9353b8d306596a56e475d8.iml" filepath="$PROJECT_DIR$/Bluetooth-Terminal-3f4744b3a10025df1b9353b8d306596a56e475d8.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ASL Translator App.iml" filepath="$PROJECT_DIR$/ASL Translator App.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

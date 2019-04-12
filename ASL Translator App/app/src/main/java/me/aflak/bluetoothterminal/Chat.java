@@ -35,15 +35,17 @@ import java.net.URISyntaxException;
 import me.aflak.bluetooth.Bluetooth;
 
 public class Chat extends AppCompatActivity implements Bluetooth.CommunicationCallback {
-    private String name;
+    private String lGlove, rGlove;
     private Bluetooth b;
+    private Bluetooth b2;
     private EditText message;
     private Button send;
     private TextView text;
     private ScrollView scrollView;
     private boolean registered=false;
-    String clientInput = "hello world";
     TextToSpeech t1;
+    boolean turn = false;
+
 
     private Socket msocket;
     {
@@ -66,14 +68,19 @@ public class Chat extends AppCompatActivity implements Bluetooth.CommunicationCa
                     String text;
                     if (args.length > 1) {
                         text = args[1].toString();
-                        Display(text);
+                        if (!text.equals("0")) {
+                            DisplayWord(text);
+                        }
                     }
                     else {
                         text = args[0].toString();
-                        Display(text);
+                        if (!text.equals("0")) {
+                            DisplayWord(text);
+                        }
                     }
-                    t1.speak(text, TextToSpeech.QUEUE_FLUSH, null);
-
+                    if(!text.equals("0")) {
+                        t1.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+                    }
                 }
             });
         }
@@ -96,33 +103,39 @@ public class Chat extends AppCompatActivity implements Bluetooth.CommunicationCa
         });
 
         text = (TextView)findViewById(R.id.text);
-        message = (EditText)findViewById(R.id.message);
-        send = (Button)findViewById(R.id.send);
+        //message = (EditText)findViewById(R.id.message);
         scrollView = (ScrollView) findViewById(R.id.scrollView);
 
         text.setMovementMethod(new ScrollingMovementMethod());
-        send.setEnabled(false);
 
         b = new Bluetooth(this);
         b.enableBluetooth();
 
-        b.setCommunicationCallback(this);
+        b2 = new Bluetooth(this);
+        b2.enableBluetooth();
 
-        int pos = getIntent().getExtras().getInt("pos");
-        name = b.getPairedDevices().get(pos).getName();
+
+        b.setCommunicationCallback(this);
+        b2.setCommunicationCallback(this);
+
+
+        int lGlovePos = 0;
+        int rGlovePos = 0;
+        for (int i = 0; i < (b.getPairedDevices()).size(); i++) {
+            if ((b.getPairedDevices().get(i).getAddress()).equals("98:D3:91:FD:4A:94")) {
+                lGlovePos = i;
+            }
+            if ((b2.getPairedDevices().get(i).getAddress()).equals("98:D3:91:FD:46:BF")) {
+                rGlovePos = i;
+            }
+        }
 
         Display("Connecting...");
-        b.connectToDevice(b.getPairedDevices().get(pos));
 
-        send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String msg = message.getText().toString();
-                message.setText("");
-                b.send(msg);
-                Display("You: "+msg);
-            }
-        });
+        b.connectToDevice(b.getPairedDevices().get(lGlovePos));
+        b2.connectToDevice(b2.getPairedDevices().get(rGlovePos));
+
+
 
         IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
         registerReceiver(mReceiver, filter);
@@ -181,7 +194,7 @@ public class Chat extends AppCompatActivity implements Bluetooth.CommunicationCa
         }
     }
 
-    public void Display(final String s){
+   public void Display(final String s){
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -190,16 +203,25 @@ public class Chat extends AppCompatActivity implements Bluetooth.CommunicationCa
             }
         });
     }
+    public void DisplayWord(final String s){
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                text.append(s);
+                scrollView.fullScroll(View.FOCUS_DOWN);
+            }
+        });
+    }
 
     @Override
     public void onConnect(BluetoothDevice device) {
         Display("Connected to "+device.getName()+" - "+device.getAddress());
-        this.runOnUiThread(new Runnable() {
+        /*this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 send.setEnabled(true);
             }
-        });
+        });*/
     }
 
     @Override
@@ -207,12 +229,21 @@ public class Chat extends AppCompatActivity implements Bluetooth.CommunicationCa
         Display("Disconnected!");
         Display("Connecting again...");
         b.connectToDevice(device);
-    }
+        b2.connectToDevice(device);
 
+    }
+    String first;
     @Override
     public void onMessage(String message) {
-
-        attemptSend(message);
+        first = message.substring(0, 1);
+        if (turn && first.equals("R")) {
+            attemptSend(message);
+            turn = !turn;
+        }
+        if (!turn && first.equals("L")) {
+            attemptSend(message);
+            turn = !turn;
+        }
     }
 
     @Override
@@ -232,6 +263,7 @@ public class Chat extends AppCompatActivity implements Bluetooth.CommunicationCa
                     @Override
                     public void run() {
                         b.connectToDevice(device);
+                        b2.connectToDevice(device);
                     }
                 }, 2000);
             }
