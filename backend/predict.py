@@ -57,7 +57,7 @@ def predict(data, orientation):
 		return "0"
 
 	# print('probability: ', probability)
-	print(letterMap[Y_predicted[0]])
+	# print(letterMap[Y_predicted[0]])
 	# print wordmap here if left hand
 	if (orientation == "LSTART"):
 		return wordMap[Y_predicted[0]]
