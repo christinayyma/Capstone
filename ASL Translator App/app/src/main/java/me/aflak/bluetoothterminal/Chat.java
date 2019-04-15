@@ -50,6 +50,8 @@ public class Chat extends AppCompatActivity implements Bluetooth.CommunicationCa
     String prev_prev_letter = "L";
     String prev_prev_prev_letter = "L";
     boolean button_pressed = false;
+    int lGlovePos = 0;
+    int rGlovePos = 0;
 
 
     private Socket msocket;
@@ -123,9 +125,6 @@ public class Chat extends AppCompatActivity implements Bluetooth.CommunicationCa
         b.setCommunicationCallback(this);
         b2.setCommunicationCallback(this);
 
-
-        int lGlovePos = 0;
-        int rGlovePos = 0;
         for (int i = 0; i < (b.getPairedDevices()).size(); i++) {
             if ((b.getPairedDevices().get(i).getAddress()).equals("98:D3:91:FD:4A:94")) {
                 lGlovePos = i;
@@ -220,7 +219,12 @@ public class Chat extends AppCompatActivity implements Bluetooth.CommunicationCa
 
     @Override
     public void onConnect(BluetoothDevice device) {
-        Display("Connected to "+device.getName()+" - "+device.getAddress());
+        if(device.getAddress().equals("98:D3:91:FD:4A:94")){
+            Display("Left hand Connected!");
+        }
+        else if(device.getAddress().equals("98:D3:91:FD:46:BF")){
+            Display("Right hand Connected!");
+        }
         /*this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -231,10 +235,16 @@ public class Chat extends AppCompatActivity implements Bluetooth.CommunicationCa
 
     @Override
     public void onDisconnect(BluetoothDevice device, String message) {
-        Display("Disconnected!");
+        if(device.getAddress().equals("98:D3:91:FD:4A:94")){
+            Display("Left hand Disconnected!");
+        }
+        else if(device.getAddress().equals("98:D3:91:FD:46:BF")){
+            Display("Right hand Disconnected!");
+        }
         Display("Connecting again...");
-        b.connectToDevice(device);
-        b2.connectToDevice(device);
+        onDestroy();
+        Intent i = new Intent(Chat.this, Chat.class);
+        startActivity(i);
 
     }
 
@@ -267,21 +277,21 @@ public class Chat extends AppCompatActivity implements Bluetooth.CommunicationCa
 
     @Override
     public void onConnectError(final BluetoothDevice device, String message) {
-        //Display("Error: "+message);
-        //Display("Trying again in 3 sec.");
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        b.connectToDevice(device);
-                        b2.connectToDevice(device);
-                    }
-                }, 2000);
-            }
-        });
+//        Display("Error: "+message);
+//        Display("Trying again in 3 sec.");
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Handler handler = new Handler();
+//                handler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        b.connectToDevice(device);
+//                        b2.connectToDevice(device);
+//                    }
+//                }, 2000);
+//            }
+//        });
     }
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
