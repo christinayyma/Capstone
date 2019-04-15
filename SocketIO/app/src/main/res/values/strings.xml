@@ -1,9 +1,0 @@
-<resources>
-    <string name="app_name">SocketIO</string>
-    <string name="clientinput">ClientInput</string>
-    <string name="serveroutput">serverOutput</string>
-    <string name="sendbutton">sendbutton</string>
-    <string name="send">SEND</string>
-    <string name="client_input">Client Input</string>
-    <string name="server_output">Server Output</string>
-</resources>
