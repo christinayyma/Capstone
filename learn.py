@@ -57,7 +57,7 @@ if __name__ == '__main__':
 	#Inizialize the model
 	svc = svm.SVC(probability = True)
 	#Inizialize the GridSearchCV with 8 processing cores and maximum verbosity
-	clf = GridSearchCV(svc, params,verbose =10, n_jobs=8)
+	clf = GridSearchCV(svc, params,verbose =8, n_jobs=6)
 
 	#Split the dataset into two subset, one used for training and one for testing
 	X_train, X_test, Y_train, Y_test = train_test_split(x_data, 

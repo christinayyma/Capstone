@@ -1,0 +1,29 @@
+.pagetitle {
+    color: #800080;
+}
+
+.field {
+    margin-bottom: 20px;
+}
+
+.button {
+    width: 120px;
+    display: block !important;
+}
+
+.disconnect {
+    margin: auto !important;
+}
+
+.page-header {
+    margin-top: 30px !important; 
+    margin-bottom: 50px !important;
+}
+
+.segment {
+    margin-top: 50px !important;
+}
+
+.container {
+    width: 50% !important;
+}

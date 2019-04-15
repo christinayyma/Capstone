@@ -1,2 +1,6 @@
 Flask==1.0.2
-Werkzeug==0.14.0
+Werkzeug
+Flask_SocketIO
+eventlet
+gunicorn
+sklearn
