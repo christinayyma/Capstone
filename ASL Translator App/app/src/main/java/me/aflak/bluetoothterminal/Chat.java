@@ -45,6 +45,11 @@ public class Chat extends AppCompatActivity implements Bluetooth.CommunicationCa
     private boolean registered=false;
     TextToSpeech t1;
     boolean turn = false;
+    String first;
+    String prev_letter = "L";
+    String prev_prev_letter = "L";
+    String prev_prev_prev_letter = "L";
+    boolean button_pressed = false;
 
 
     private Socket msocket;
@@ -207,7 +212,7 @@ public class Chat extends AppCompatActivity implements Bluetooth.CommunicationCa
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                text.append(s);
+                text.append(s + "\n");
                 scrollView.fullScroll(View.FOCUS_DOWN);
             }
         });
@@ -232,18 +237,27 @@ public class Chat extends AppCompatActivity implements Bluetooth.CommunicationCa
         b2.connectToDevice(device);
 
     }
-    String first;
+
     @Override
     public void onMessage(String message) {
         first = message.substring(0, 1);
-        if (turn && first.equals("R")) {
-            attemptSend(message);
-            turn = !turn;
+
+        if(first.equals("L")){
+            button_pressed = true;
         }
-        if (!turn && first.equals("L")) {
-            attemptSend(message);
-            turn = !turn;
+        else if(prev_letter.equals("R") && first.equals("R") && prev_prev_letter.equals("R") && prev_prev_prev_letter.equals("R")){
+            button_pressed = false;
         }
+        if (button_pressed && first.equals("L")) {
+            attemptSend(message);
+        }
+        else if (!button_pressed && first.equals("R")) {
+            attemptSend(message);
+        }
+        prev_prev_prev_letter = prev_prev_letter;
+        prev_prev_letter = prev_letter;
+        prev_letter = first;
+
     }
 
     @Override
@@ -253,8 +267,8 @@ public class Chat extends AppCompatActivity implements Bluetooth.CommunicationCa
 
     @Override
     public void onConnectError(final BluetoothDevice device, String message) {
-        Display("Error: "+message);
-        Display("Trying again in 3 sec.");
+        //Display("Error: "+message);
+        //Display("Trying again in 3 sec.");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
